@@ -1,0 +1,6 @@
+streamlit
+specklepy
+plotly
+requests
+os
+copy
