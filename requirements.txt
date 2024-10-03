@@ -1,6 +1,5 @@
 streamlit
-specklepy.api
-plotly.graph_objects
+plotly
 requests
-os
-copy
+flask
+specklepy
