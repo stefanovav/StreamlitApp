@@ -1,6 +1,6 @@
 streamlit
-specklepy
-plotly
+specklepy.api
+plotly.graph_objects
 requests
 os
 copy
