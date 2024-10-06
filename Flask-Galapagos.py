@@ -20,7 +20,7 @@ import specklepy
 # Speckle server configuration
 HOST = "speckle.xyz"
 STREAM_ID = "f132a9844d"
-COMMIT_FILE_PATH = r"C:\Users\Denitsa\Documents\WebSite\22.Video\CommitID.txt"  # Update with your file path
+COMMIT_FILE_PATH = "CommitID.txt"  # Update with your file path
 
 def get_latest_commit_id(file_path):
     """Retrieve the latest commit ID from a file."""
