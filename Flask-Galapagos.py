@@ -306,8 +306,16 @@ def main():
         return
 
     # Step 2: Enter Speckle Token
-    speckle_token = os.getenv("SPECKLE_TOKEN")
-    SPECKLE_TOKEN = st.text_input("Enter Speckle Token:", value=speckle_token, type = "password")
+    speckle_token = os.getenv("SPECKLE_TOKEN")  # Secret token
+
+    # Ask the user to enter the word 'SPECKLE_TOKEN'
+    SPECKLE_TOKEN_INPUT = st.text_input("Enter Speckle Token Name:")
+
+    # Check if the user typed 'SPECKLE_TOKEN' (as a reference to the actual secret)
+    if SPECKLE_TOKEN_INPUT == "SPECKLE_TOKEN":
+        SPECKLE_TOKEN = speckle_token  # Use the secret token from Streamlit Secrets
+    else:
+        SPECKLE_TOKEN = None
 
     st.write("Entered Commit ID from Grasshopper:", COMMIT_ID)
     #st.write("Entered Speckle Token:", speckle_token)
