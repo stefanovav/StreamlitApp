@@ -310,7 +310,7 @@ def main():
     SPECKLE_TOKEN = st.text_input("Enter Speckle Token:", value=speckle_token, type = "password")
 
     st.write("Entered Commit ID from Grasshopper:", COMMIT_ID)
-    st.write("Entered Speckle Token:", SPECKLE_TOKEN)
+    st.write("Entered Speckle Token:", speckle_token)
 
     # Step 3: User inputs for area and thickness
     area = st.number_input("Enter area, [m²]:", min_value=1.0, step=0.1)
