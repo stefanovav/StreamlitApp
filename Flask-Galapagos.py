@@ -306,7 +306,7 @@ def main():
         return
 
     # Step 2: Enter Speckle Token
-    speckle_token = os.environ.get("SPECKLE_TOKEN")
+    speckle_token = os.getenv("SPECKLE_TOKEN")
     SPECKLE_TOKEN = st.text_input("Enter Speckle Token:", value=speckle_token)
 
     st.write("Entered Commit ID from Grasshopper:", COMMIT_ID)
