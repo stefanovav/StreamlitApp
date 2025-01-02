@@ -8,7 +8,7 @@ from specklepy.transports.server import ServerTransport
 from specklepy.api.credentials import get_account_from_token
 from specklepy.objects import Base
 import os
-# import copy
+import copy
 import streamlit.components.v1 as components
 import specklepy
 # import compute_rhino3d.Util
