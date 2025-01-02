@@ -8,16 +8,16 @@ from specklepy.transports.server import ServerTransport
 from specklepy.api.credentials import get_account_from_token
 from specklepy.objects import Base
 import os
-import copy
+# import copy
 import streamlit.components.v1 as components
 import specklepy
-import compute_rhino3d.Util
-import compute_rhino3d.Grasshopper as gh
-from compute_rhino3d.Grasshopper import DataTree
-import compute_rhino3d as compute
+# import compute_rhino3d.Util
+# import compute_rhino3d.Grasshopper as gh
+# from compute_rhino3d.Grasshopper import DataTree
+# import compute_rhino3d as compute
 import json
-from compute_rhino3d.Util import url as rhino_url
-from compute_rhino3d.Grasshopper import EvaluateDefinition
+# from compute_rhino3d.Util import url as rhino_url
+# from compute_rhino3d.Grasshopper import EvaluateDefinition
 
 
 
