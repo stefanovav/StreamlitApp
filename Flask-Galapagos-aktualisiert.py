@@ -31,7 +31,7 @@ import json
 
 
 # Speckle server configuration
-HOST = "https://app.speckle.systems/"
+HOST = "https://app.speckle.systems"
 STREAM_ID = "f132a9844d"
 COMMIT_FILE_PATH = "CommitID.txt"  # Update with your file path
 
