@@ -224,7 +224,7 @@ def main():
     new_version_id = None  # Initialize new_version_id
 
     st.title("Speckle Moment Values on a Concrete Shell")
-    st.image("https://raw.githubusercontent.com/stefanovav/StreamlitApp/main/Model.png",
+    st.image("https://raw.githubusercontent.com/stefanovav/StreamlitApp/main/thumbnail.png",
              caption="App Thumbnail", use_container_width=True)
 
     # Step 1: Get the latest commit ID from the file
