@@ -8,6 +8,7 @@ from specklepy.api.client import ModelResource
 from specklepy.transports.server import ServerTransport
 from specklepy.api.credentials import get_account_from_token
 from specklepy.objects import Base
+import re
 import os
 import copy
 import streamlit.components.v1 as components
@@ -40,17 +41,41 @@ stream_id = PROJECT_ID
 BRANCH_NAME = "shell"
 
 
-VERSION_FILE_PATH = r"VersionID.txt"  # Update with your file path
+#VERSION_FILE_PATH = r"C:\Users\Denitsa\Documents\WebSite\22.Video\VersionID.txt"  # Update with your file path
 
-def get_latest_version_id(file_path):
-    """Retrieve the latest commit ID from a file."""
-    try:
-        with open(file_path, 'r') as f:
-            version_id = f.read().strip()
-        return version_id
-    except FileNotFoundError:
-        st.error("Commit ID file not found.")
-        return None
+# def get_latest_version_id(file_path):
+#     """Retrieve the latest commit ID from a file."""
+#     try:
+#         with open(file_path, 'r') as f:
+#             version_id = f.read().strip()
+#         return version_id
+#     except FileNotFoundError:
+#         st.error("Commit ID file not found.")
+#         return None
+
+version_url = st.text_input("Enter Version URL:", "")  # User input for URL
+
+
+def extract_version_id(url):
+    """Extract commit ID from the URL."""
+    match = re.search(r'@([a-zA-Z0-9]+)', url)
+    if match:
+        return match.group(1)
+    return None
+
+# Extract the version ID from the URL
+if version_url:
+    version_id = extract_version_id(version_url)
+
+    # Show an error if no version ID was extracted
+    if not version_id:
+        st.error("Failed to extract version ID from the URL.")
+        st.stop()
+
+    # Output the extracted version ID for verification
+    st.write(f"Extracted Version ID: {version_id}")
+
+
 
 
 def find_and_update_mesh(members_data, area, thickness):
@@ -146,7 +171,7 @@ def fetch_data_from_speckle(project_id, version_id, speckle_token):
         return None, None
 
     try:
-        st.write(f"GraphQL Query Variables: {{ 'versionId': {version_id} }}")
+        st.write(f"Current Version ID:  {version_id} ")
         project = client.project.get(project_id)
         version = client.version.get(version_id, project_id)
         return project, version
@@ -220,18 +245,18 @@ def display_combined_table(combined_data):
 
 
 def main():
-    global VERSION_FILE_PATH
+    #global VERSION_FILE_PATH
     new_version_id = None  # Initialize new_version_id
 
     st.title("Speckle Moment Values on a Concrete Shell")
     st.image("https://raw.githubusercontent.com/stefanovav/StreamlitApp/main/thumbnail.png",
              caption="App Thumbnail", use_container_width=True)
 
-    # Step 1: Get the latest commit ID from the file
-    VERSION_ID = get_latest_version_id(VERSION_FILE_PATH)
-    if not VERSION_ID:
-        st.error("Failed to retrieve the latest version ID.")
-        return
+    # # Step 1: Get the latest version ID from the file
+    # VERSION_ID = None
+    # if not VERSION_ID:
+    #     st.error("Failed to retrieve the latest version ID.")
+    #     return
 
     SPECKLE_TOKEN_APP = os.getenv("SPECKLE_TOKEN_APP")
     if SPECKLE_TOKEN_APP:
@@ -266,7 +291,7 @@ def main():
         st.write(f"Model ID retrieved: {model_id}")
 
         # Fetch data from Speckle server
-        project, version = fetch_data_from_speckle(PROJECT_ID, VERSION_ID, SPECKLE_TOKEN_APP)
+        project, version = fetch_data_from_speckle(PROJECT_ID, version_id, SPECKLE_TOKEN_APP)
         if not project or not version:
             st.error("Failed to fetch stream or commit. Please check your Speckle server setup.")
             return
