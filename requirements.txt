@@ -3,3 +3,4 @@ plotly
 requests
 flask
 specklepy
+stringcase
