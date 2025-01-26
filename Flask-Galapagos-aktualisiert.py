@@ -33,21 +33,14 @@ from specklepy.core.api.models import (
 
 
 
-
-# compute_rhino3d.Util.url = r'http://localhost:6500/'.encode('utf-8')
-
-
-
-
 # Speckle server configuration
 HOST = "https://app.speckle.systems"
 PROJECT_ID = "791d494b2e"
-#OBJECT_ID = "166492fae4d3e8fc9c3d6e70edd0981a"
 stream_id = PROJECT_ID
 BRANCH_NAME = "shell"
 
 
-VERSION_FILE_PATH = r"VersionID.txt"  # Update with your file path
+VERSION_FILE_PATH = r"C:\Users\Denitsa\Documents\WebSite\22.Video\VersionID.txt"  # Update with your file path
 
 def get_latest_version_id(file_path):
     """Retrieve the latest commit ID from a file."""
@@ -231,6 +224,8 @@ def main():
     new_version_id = None  # Initialize new_version_id
 
     st.title("Speckle Moment Values on a Concrete Shell")
+    st.image("https://raw.githubusercontent.com/stefanovav/StreamlitApp/main/Model.png",
+             caption="App Thumbnail", use_container_width=True)
 
     # Step 1: Get the latest commit ID from the file
     VERSION_ID = get_latest_version_id(VERSION_FILE_PATH)
