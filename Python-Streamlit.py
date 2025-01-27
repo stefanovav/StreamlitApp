@@ -53,7 +53,7 @@ BRANCH_NAME = "shell"
 #         st.error("Commit ID file not found.")
 #         return None
 
-version_url = st.text_input("Enter Version URL:", "")  # User input for URL
+
 
 
 def extract_version_id(url):
@@ -64,16 +64,7 @@ def extract_version_id(url):
     return None
 
 # Extract the version ID from the URL
-if version_url:
-    version_id = extract_version_id(version_url)
 
-    # Show an error if no version ID was extracted
-    if not version_id:
-        st.error("Failed to extract version ID from the URL.")
-        st.stop()
-
-    # Output the extracted version ID for verification
-    st.write(f"Extracted Version ID: {version_id}")
 
 
 
@@ -246,7 +237,7 @@ def display_combined_table(combined_data):
 
 def main():
     #global VERSION_FILE_PATH
-    new_version_id = None  # Initialize new_version_id
+    #new_version_id = None  # Initialize new_version_id
 
     st.title("Speckle Moment Values on a Concrete Shell")
     st.image("https://raw.githubusercontent.com/stefanovav/StreamlitApp/main/thumbnail.png",
@@ -258,20 +249,48 @@ def main():
     #     st.error("Failed to retrieve the latest version ID.")
     #     return
 
-    SPECKLE_TOKEN_APP = os.getenv("SPECKLE_TOKEN_APP")
+    # SPECKLE_TOKEN_APP = os.getenv("SPECKLE_TOKEN_APP")
+    # if SPECKLE_TOKEN_APP:
+    #     st.success("Speckle Token successfully retrieved from the environment.")
+    # else:
+    #     SPECKLE_TOKEN_APP = st.text_input("Enter Speckle Token:", type="password")
+    #     if not SPECKLE_TOKEN_APP:
+    #         st.error("Speckle Token is required to proceed.")
+    #         st.stop()
+
+    # User Authentication through Token Input
+    SPECKLE_TOKEN_APP = st.text_input("Enter your Speckle Token to authenticate:", type="password")
+
+    if not SPECKLE_TOKEN_APP:
+        st.warning("Please enter your Speckle token to proceed.")
+        st.stop()
+
     if SPECKLE_TOKEN_APP:
-        st.success("Speckle Token successfully retrieved from the environment.")
+        st.success("Token received. Authenticating...")
+        try:
+            # Authenticate with Speckle using the provided token
+            client = SpeckleClient(host=HOST)  # Adjust host if necessary
+            account = get_account_from_token(SPECKLE_TOKEN_APP, HOST)
+            client.authenticate_with_account(account)
+            st.success("Successfully authenticated with Speckle!")
+        except Exception as e:
+            st.error(f"Authentication failed: {e}")
+            st.stop()
     else:
-        SPECKLE_TOKEN_APP = st.text_input("Enter Speckle Token:", type="password")
-        if not SPECKLE_TOKEN_APP:
-            st.error("Speckle Token is required to proceed.")
+        st.warning("Please enter your Speckle token to proceed.")
+
+
+    version_url = st.text_input("Enter Speckle URL:", "")  # User input for URL
+    if version_url:
+        version_id = extract_version_id(version_url)
+
+        # Show an error if no version ID was extracted
+        if not version_id:
+            st.error("Failed to extract version ID from the URL.")
             st.stop()
 
-    # # Initialize variables
-    # client = None  # Declare `client` to avoid "referenced before assignment" error
-    # project = None
-    # version_id = None
-    # model_id = None
+        # Output the extracted version ID for verification
+        st.write(f"Extracted Version ID: {version_id}")
 
     try:
         # Authenticate with Speckle
