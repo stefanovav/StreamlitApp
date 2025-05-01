@@ -88,19 +88,16 @@ WEBHOOK_URL = "https://speckle-webhook-nx44ryeaaq-nw.a.run.app/latest"
 def authenticate_with_speckle():
 
     client = SpeckleClient(host=HOST)
+    speckle_token = st.secrets["TOKEN"]
+    client.authenticate_with_token(speckle_token)
 
-    # Get the default Speckle account (fetches stored login)
-    account = get_default_account()
-    if not account:
-        st.error("No Speckle account found! Please log in to your Speckle account.")
-        return None, None
 
     # Authenticate the client with the fetched account
-    client.authenticate_with_account(account)
+    #client.authenticate_with_account(account)
     #speckle_token = account.token  # Dynamically fetch the token
 
-    st.success(f"✅ Authenticated with Speckle as: {account.userInfo.name}")
-    return client, account
+    st.success(f"✅ Authenticated with Speckle as: {client.user.name}")
+    return client, client.account
 
 # @st.cache_data(ttl=10)
 # def check_latest_version():
@@ -255,7 +252,7 @@ def fetch_latest_version(client, project_id, model_id):
 
     try:
         # Fetch the model with versions
-        model_with_versions = client.model.get_with_versions(model_id=model_id, project_id=project_id)
+        model_with_versions = client.version(model_id=model_id, project_id=project_id)
 
         # Debug: Check if there are versions
         if not model_with_versions.versions or not model_with_versions.versions.items:
