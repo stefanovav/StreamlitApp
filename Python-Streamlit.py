@@ -427,10 +427,7 @@ def main():
 
 
     # # 🟢 Step 1: Authenticate with Speckle
-    client, account = authenticate_with_speckle()
-    if not client or not account:  # Check if authentication failed
-        return
-    #speckle_token = account.token
+    client = authenticate_with_speckle()
 
 
 
