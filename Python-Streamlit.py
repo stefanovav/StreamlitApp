@@ -45,7 +45,7 @@ import time
 HOST = "https://app.speckle.systems"
 rhino_compute_url = "http://localhost:6500/io"
 compute_rhino3d.Util.url = rhino_compute_url
-GH_FILE_PATH = r""https://raw.githubusercontent.com/stefanovav/StreamliApp/main/22.Video/250218_GHScript_Karamba3d_STB%20Platte-1.gh""
+GH_FILE_PATH = r"https://raw.githubusercontent.com/stefanovav/StreamliApp/main/22.Video/250218_GHScript_Karamba3d_STB%20Platte-1.gh"
 WEBHOOK_URL = "https://speckle-webhook-nx44ryeaaq-nw.a.run.app/latest"
 
 
