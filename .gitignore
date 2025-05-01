@@ -1,2 +1,0 @@
-# Prevent secrets from being pushed to GitHub
-.secrets.toml
