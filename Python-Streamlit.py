@@ -95,7 +95,7 @@ def authenticate_with_speckle():
     #client.authenticate_with_account(account)
     #speckle_token = account.token  # Dynamically fetch the token
 
-    st.success(f"✅ Authenticated with Speckle as: {client.user.name}")
+    st.success(f"✅ Authenticated with Speckle as: {client.user.account}")
     return client, client.account
 
 # @st.cache_data(ttl=10)
