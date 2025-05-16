@@ -45,7 +45,8 @@ import time
 HOST = "https://app.speckle.systems"
 rhino_compute_url = "http://localhost:6500/io"
 compute_rhino3d.Util.url = rhino_compute_url
-GH_FILE_PATH = "https://raw.githubusercontent.com/stefanovav/StreamliApp/main/22.Video/250218_GHScript_Karamba3d_STB%20Platte-1.gh"
+GH_FILE_PATH = r"C:\Users\Denitsa\Documents\WebSite\22.Video\GHScript_Karamba3d_2d Structures_Shell_22Video.gh"
+
 
 
 
@@ -54,85 +55,46 @@ GH_FILE_PATH = "https://raw.githubusercontent.com/stefanovav/StreamliApp/main/22
 # account = None
 # speckle_token = None
 
-# async def test_simple_request():
-#     try:
-#         # Define the Grasshopper definition URL or local path
-#         with open(GH_FILE_PATH, "rb") as file:
-#             gh_definition = file.read()
-#             gh_definition_base64 = base64.b64encode(gh_definition).decode('utf-8')
-#         # Sending the request with the definition and some dummy values
-#         request_data = {
-#             "algo": gh_definition_base64,  # The Grasshopper definition URL or path
-#             "values": [
-#                 {"area": 100},  # Example input, if your GH file expects "area"
-#                 {"thickness": 10}  # Example input, if your GH file expects "thickness"
-#             ]
-#         }
 #
-#         async with httpx.AsyncClient(timeout=300) as client:
-#             response = await client.post("http://localhost:6500/io", json=request_data)
-#             if response.status_code == 200:
-#                 data = response.json()
+# def authenticate_with_speckle():
 #
-#             print(f"✅ Full Response: {data}")
+#     client = SpeckleClient(host=HOST)
+#     speckle_token = st.secrets["TOKEN"]["value"]
+#     client.authenticate_with_token(speckle_token)
 #
 #
-#     except httpx.RequestError as e:
-#         print(f"⚠️ Error: Could not connect to Rhino Compute. {str(e)}")
-#
-# # Run the request
-# asyncio.run(test_simple_request())
-
+#     # Authenticate the client with the fetched account
+#     #client.authenticate_with_account(account)
+#     #speckle_token = account.token  # Dynamically fetch the token
+#     #st.write("Token from secrets:", st.secrets["TOKEN"]["value"])
+#     #st.write("Token is:", speckle_token)
+#     st.success(f"✅ Authenticated with Speckle as: {client.user.name}")
+#     return client, client.account
 
 def authenticate_with_speckle():
 
     client = SpeckleClient(host=HOST)
-    speckle_token = st.secrets["TOKEN"]["value"]
-    client.authenticate_with_token(speckle_token)
 
+    # Get the default Speckle account (fetches stored login)
+    account = get_default_account()
+    if not account:
+        st.error("No Speckle account found! Please log in to your Speckle account.")
+        return None, None
 
     # Authenticate the client with the fetched account
-    #client.authenticate_with_account(account)
+    client.authenticate_with_account(account)
     #speckle_token = account.token  # Dynamically fetch the token
 
-    st.success(f"✅ Authenticated with Speckle as: {client.user.name}")
-    return client, client.account
-
-# @st.cache_data(ttl=10)
-# def check_latest_version():
-#     """Check if a new version is available from the webhook."""
-#     try:
-#         response = requests.get(WEBHOOK_URL)
-#         if response.status_code == 200:
-#             data = response.json()
-#             if "versionId" in data:
-#                 if data["versionId"] != st.session_state.get("latest_version_id"):
-#                     st.session_state["is_webhook_update"] = True  # ✅ Webhook triggered update
-#                 return data["versionId"]
-#     except Exception as e:
-#         st.error(f"Error checking webhook: {e}")
-#     return None
+    st.success(f"✅ Authenticated with Speckle as: {account.userInfo.name}")
+    return client, account
 
 
-#
-# def check_and_update_version():
-#     """Check for a new version from webhook and update Streamlit if needed."""
-#     newest_version = check_latest_version()
-#
-#     if newest_version and newest_version != st.session_state["latest_version_id"]:
-#         if st.session_state["is_user_update"]:
-#             st.session_state["is_user_update"] = False  # ✅ Reset flag
-#         else:
-#             st.session_state["latest_version_id"] = newest_version
-#             st.experimental_rerun()  # 🔄 Refresh Streamlit to load new data
 
 
 
 
 def run_grasshopper(area, thickness, project_url, speckle_token, selected_model_id):
-    headers = {
-        "Content-Type": "application/json"
-    }
+    headers = {"Content-Type": "application/json"}
     #user_area = 120  # Example area value
     #user_thickness = 60
     # Local Grasshopper file (must be open in Rhino)
@@ -159,10 +121,11 @@ def run_grasshopper(area, thickness, project_url, speckle_token, selected_model_
             "algo": gh_definition_base64,
             "pointer": None,
             "values": [
+                {"ParamName": "area", "InnerTree": {"{0}": [{"data": area}]}},
+                {"ParamName": "thickness", "InnerTree": {"{0}": [{"data": thickness}]}},
                 {"ParamName": "project_url", "InnerTree": {"{0}": [{"data": full_project_url}]}},
                 {"ParamName": "speckle_token", "InnerTree": {"{0}": [{"data": speckle_token}]}},
-                {"ParamName": "area", "InnerTree": {"{0}": [{"data": area}]}},
-                {"ParamName": "thickness", "InnerTree": {"{0}": [{"data": thickness}]}}
+
             ]
         }
     print(f"Sending area: {area}, thickness: {thickness}")
@@ -198,30 +161,6 @@ def fetch_models(client, project_id):
 
 
 
-# def find_and_update_mesh(members_data, area, thickness):
-#     # Initialize as a dictionary to preserve branch keys
-#     updated_members_data = {}
-#
-#     branch_keys = [key for key in dir(members_data) if key.startswith("@{")]
-#
-#     for branch_key in branch_keys:
-#         branch_value = getattr(members_data, branch_key, None)
-#
-#         if isinstance(branch_value, list):
-#             updated_branch = []
-#             for element in branch_value:
-#                 member_obj = getattr(element, "Member", None)
-#                 if member_obj and member_obj.speckle_type == "Objects.Geometry.Mesh":
-#                     member_obj.area = area
-#                     member_obj.thickness = thickness
-#                 updated_branch.append(element)
-#
-#             # Store the updated branch under its key
-#             updated_members_data[branch_key] = updated_branch
-#
-#     return updated_members_data
-
-
 def find_utilization_value(members_data):
     """Extract utilization values from members data and return as a structured dictionary."""
     utilization_data = []
@@ -241,97 +180,36 @@ def find_utilization_value(members_data):
     return utilization_data
 
 
+def fetch_latest_version(selected_model):
+    """Extract and return version ID from the model's previewUrl."""
+    preview_url = getattr(selected_model, "previewUrl", None)
 
+    if preview_url is None:
+        st.error("No previewUrl found in the selected model.")
+        return None
 
-def fetch_latest_version(client, project_id, model_id):
-    """Fetch the latest version ID of a model within a given project."""
-    #client = SpeckleClient(host=HOST)
-    # account = get_account_from_token(speckle_token, HOST)
-    # client.authenticate_with_account(account)
+    match = re.search(r'commits/([a-f0-9]+)', preview_url)
 
-    try:
-        # Fetch the model with versions
-        model_with_versions = client.version(model_id=model_id, project_id=project_id)
-
-        # Debug: Check if there are versions
-        if not model_with_versions.versions or not model_with_versions.versions.items:
-            st.error(f"Model {model_id} has no versions.")
-            return None
-
-        # Debug: Print available versions
-
-        for version in model_with_versions.versions.items:
-            latest_version = max(
-                model_with_versions.versions.items,
-                key=lambda v: datetime.fromisoformat(str(version.createdAt))  # Convert createdAt to datetime
-            )
-
-        # Print latest version details
-        st.write(f"Latest Version ID: {latest_version.id}, , Created At: {latest_version.createdAt}")
-
-        return latest_version.id  # Return the latest version ID
-
-    except Exception as e:
-        st.error(f"Error fetching latest version: {e}")
+    if match:
+        return match.group(1)  # This is the version ID
+    else:
+        st.error("Could not extract version ID from preview URL.")
         return None
 
 
 
-
-
-#@st.cache_data(ttl=300)
 def fetch_data_from_speckle(client, project_id, version_id):
-    """Fetch data from the Speckle server."""
-    # client = SpeckleClient(host=HOST)
-    # account = get_account_from_token(speckle_token, HOST)
-    # client.authenticate_with_account(account)
-
+    """Fetch data from the Speckle server using the selected model only."""
     try:
-        #st.write(f"Latest Version ID: {version_id}")
         project = client.project.get(project_id)
-        version = client.version.get(version_id, project_id)
+        version = client.version.get(version_id, project_id)  # No need to fetch by version ID
+
         return project, version
     except Exception as e:
-        st.error(f"Failed to fetch project or version: {e}")
+        st.error(f"Failed to fetch project or model: {e}")
         return None, None
 
 
-
-# def send_data_to_speckle(client, area, thickness, project_id, model_id, speckle_token, res):
-#     st.write(f"Confirmed Model ID: {model_id}")
-#     # client = SpeckleClient(host=HOST)
-#     # account = get_account_from_token(speckle_token, HOST)
-#     # client.authenticate_with_account(account)
-#     account = client.account
-#     #Access Members data
-#     members_data = getattr(res, "@data", None)
-#     if members_data is None:
-#         st.error("'@data' not found in the response object.")
-#         return
-#
-#     # Use find_and_update_mesh to update the data
-#     updated_members_data = find_and_update_mesh(members_data, area, thickness)
-#
-#     # Reassign the updated structure back to `res.Members`
-#     for branch_key, updated_branch in updated_members_data.items():
-#         setattr(members_data, branch_key, updated_branch)
-#     setattr(res, "@data", members_data)
-#
-#
-#     # Send updated data back to Speckle
-#     transport = ServerTransport(client=client, stream_id=project_id, account=account)
-#     obj_id = operations.send(res, [transport])
-#
-#
-#     input_data = CreateVersionInput(
-#         objectId=obj_id,
-#         modelId=model_id,
-#         projectId=project_id
-#     )
-#
-#     new_version_id = client.version.create(input_data)  # Create and get version ID
-#
-#     return new_version_id
 
 
 
@@ -363,71 +241,17 @@ def transform_keys_to_integers(obj):
         return obj
 
 
-# def display_combined_table(combined_data):
-#     """Display the combined data in a Plotly table."""
-#
-#     # Calculate the height dynamically based on the number of rows
-#     num_rows = len(combined_data)
-#     row_height = 30  # Adjust this value as needed
-#     table_height = num_rows * row_height
-#
-#     header_values = list(combined_data[0].keys())
-#     cell_values = [list(col) for col in zip(*[list(row.values()) for row in combined_data])]
-#
-#     fig = go.Figure(data=[go.Table(
-#         header=dict(
-#             values=header_values,
-#             fill_color='paleturquoise',
-#             align='left',
-#             font=dict(size=16)  # Set header font size to 16
-#         ),
-#         cells=dict(
-#             values=cell_values,
-#             fill_color='#F5F5F5',
-#             align='left',
-#             font=dict(size=14)  # Set cell font size to 14
-#         )
-#     )])
-#
-#     # Update the layout to adjust the height
-#     fig.update_layout(
-#         height=table_height,
-#         margin=dict(t=0, b=0, pad=0)
-#     )
-#
-#     st.plotly_chart(fig)
-
 
 def main():
     st.title("Utilization Values")
-    # st.image(
-    #     "https://raw.githubusercontent.com/stefanovav/StreamlitApp/main/Model.png",
-    #     caption="App Thumbnail",
-    #     width=400  # Set width in pixels
-    # )
-
-    if (
-            "model_loaded" in st.session_state and st.session_state["model_loaded"]
-            and "project_id" in st.session_state
-            and "selected_model_id" in st.session_state
-            and "speckle_token" in st.session_state
-    ):
-        versionviewer(
-            st.session_state["project_id"],
-            st.session_state["selected_model_id"],
-            st.session_state["speckle_token"]
-        )
-    else:
-        st.image(
-            "https://raw.githubusercontent.com/stefanovav/StreamlitApp/main/Model.png",
-            caption="App Thumbnail",
-            width=400
-        )
 
 
 
     # # 🟢 Step 1: Authenticate with Speckle
-    client = authenticate_with_speckle()
+    client, account = authenticate_with_speckle()
+    if not client or not account:  # Check if authentication failed
+        return
+    speckle_token = account.token
 
 
 
@@ -452,20 +276,22 @@ def main():
     model_dict = {model.name: model.id for model in models}
     selected_model_name = st.selectbox("Select a model:", list(model_dict.keys()))
     selected_model_id = model_dict[selected_model_name]
-    #selected_model = next(model for model in models if model.name == selected_model_name)
+    selected_model = next(model for model in models if model.name == selected_model_name)
     st.write(f"Selected Model: {selected_model_name} (Model ID: {selected_model_id})")
 
     # 🟢 Step 4: Initialize session state for version tracking
 
-    latest_version_id = fetch_latest_version(client, project_id, selected_model_id)
+    latest_version_id = fetch_latest_version(selected_model)
     if not latest_version_id:
         st.error("Could not fetch latest version for the selected model.")
         return
 
+    st.write(f"Version ID: {latest_version_id}")
+
     project, version = fetch_data_from_speckle(client, project_id, latest_version_id)
     if not project or not version:
-        st.error("Failed to fetch stream or commit. Please check your Speckle server setup.")
-        return
+         st.error("Failed to fetch stream or commit. Please check your Speckle server setup.")
+         return
 
 
     # 🟢 Step 5: User Inputs for Area and Thickness
@@ -488,11 +314,14 @@ def main():
 
             try:
                 # 🟢 Step 7: Fetch the Newest Version from Speckle
-                latest_version_id = fetch_latest_version(client, project_id, selected_model_id)
+                # latest_version = fetch_latest_version(selected_model)
+                # if not latest_version:
+                #     st.error("Could not fetch latest version after update.")
+                #     return
+                latest_version_id = fetch_latest_version(selected_model)
                 if not latest_version_id:
                     st.error("Could not fetch latest version after update.")
                     return
-
                 project, version = fetch_data_from_speckle(client, project_id, latest_version_id)
                 if not project or not version:
                     st.error("Failed to fetch the updated model from Speckle.")
@@ -508,12 +337,6 @@ def main():
                     if utilization_values:
                         # Extract the first utilization value and round it
                         rounded_utilization = round(utilization_values[0]["Utilization"], 2)
-                        #st.session_state["last_utilization"] = rounded_utilization
-
-                        st.session_state["model_loaded"] = True
-                        st.session_state["project_id"] = project_id
-                        st.session_state["selected_model_id"] = selected_model_id
-                        st.session_state["speckle_token"] = speckle_token
 
                         # Determine status and color based on utilization value
                         status = "OK" if rounded_utilization <= 1 else "!"
@@ -545,13 +368,6 @@ def main():
                         # Display in Streamlit
                         #st.write(f"✅ Utilization Value: {rounded_utilization}")
                         st.plotly_chart(fig)
-
-                    # 🟢 Step 9: Update Speckle with the New Version
-                    # new_version_id = send_data_to_speckle(client, area, thickness, project_id, selected_model_id,
-                    #                                       speckle_token, res)
-                    # if new_version_id:
-                    #     st.write("✅ New Version ID:", new_version_id)
-                    #     st.write("🔄 Data Sent: Area =", area, "Thickness =", thickness)
 
                         # 🟢 Step 10: Update the Viewer with the Latest Model
                         versionviewer(project_id, selected_model_id, speckle_token)
