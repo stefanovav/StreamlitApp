@@ -45,7 +45,7 @@ import time
 HOST = "https://app.speckle.systems"
 rhino_compute_url = "http://localhost:6500/io"
 compute_rhino3d.Util.url = rhino_compute_url
-GH_FILE_PATH = r"https://raw.githubusercontent.com/stefanovav/StreamlitApp/main/gh-defs/GHScript_Karamba3d_2d%20Structures_Shell_22Video.gh"
+GH_FILE_PATH = r"https://raw.githubusercontent.com/stefanovav/StreamlitApp/main/GHScript_Karamba3d_2d%20Structures_Shell_22Video.gh"
 
 
 def authenticate_with_speckle():
