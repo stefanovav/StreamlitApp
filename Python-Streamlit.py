@@ -48,49 +48,13 @@ compute_rhino3d.Util.url = rhino_compute_url
 GH_FILE_PATH = r"https://raw.githubusercontent.com/stefanovav/StreamlitApp/main/gh-defs/GHScript_Karamba3d_2d%20Structures_Shell_22Video.gh"
 
 
-
-
-
-
-# client = None
-# account = None
-# speckle_token = None
-
-#
-# def authenticate_with_speckle():
-#
-#     client = SpeckleClient(host=HOST)
-#     speckle_token = st.secrets["TOKEN"]["value"]
-#     client.authenticate_with_token(speckle_token)
-#
-#
-#     # Authenticate the client with the fetched account
-#     #client.authenticate_with_account(account)
-#     #speckle_token = account.token  # Dynamically fetch the token
-#     #st.write("Token from secrets:", st.secrets["TOKEN"]["value"])
-#     #st.write("Token is:", speckle_token)
-#     st.success(f"✅ Authenticated with Speckle as: {client.user.name}")
-#     return client, client.account
-
 def authenticate_with_speckle():
 
     client = SpeckleClient(host=HOST)
-
-    # Get the default Speckle account (fetches stored login)
-    account = get_default_account()
-    if not account:
-        st.error("No Speckle account found! Please log in to your Speckle account.")
-        return None, None
-
-    # Authenticate the client with the fetched account
-    client.authenticate_with_account(account)
-    #speckle_token = account.token  # Dynamically fetch the token
-
-    st.success(f"✅ Authenticated with Speckle as: {account.userInfo.name}")
-    return client, account
-
-
-
+    speckle_token = st.secrets["TOKEN"]["value"]
+    client.authenticate_with_token(speckle_token)
+    st.success(f"✅ Authenticated with Speckle as: {client.user.name}")
+    return client, client.account
 
 
 
