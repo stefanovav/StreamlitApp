@@ -72,9 +72,15 @@ def run_grasshopper(area, thickness, project_url, speckle_token, selected_model_
 
     full_project_url = f"https://app.speckle.systems/projects/{project_id}/models/{selected_model_id}"
 
-    with open(GH_FILE_PATH, "rb") as file:
-        gh_definition = file.read()
+  #When GH file is on GitHub:
+        response = requests.get(GH_FILE_URL)
+        if response.status_code != 200:
+            st.error(f"❌ Failed to fetch GH file from GitHub. Status code: {response.status_code}")
+            return None
+
+        gh_definition = response.content
         gh_definition_base64 = base64.b64encode(gh_definition).decode('utf-8')
+
 
         st.write("✅ **Verification of data:**")
         st.write("⚪ Sending Area:", area)
