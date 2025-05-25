@@ -43,7 +43,7 @@ import time
 
 # Speckle server configuration
 HOST = "https://app.speckle.systems"
-rhino_compute_url = "http://localhost:6500/io"
+rhino_compute_url = "http://localhost:6500/grasshopper"
 compute_rhino3d.Util.url = rhino_compute_url
 GH_FILE_PATH = r"https://raw.githubusercontent.com/stefanovav/StreamlitApp/main/GHScript_Karamba3d_2d%20Structures_Shell_22Video.gh"
 
@@ -97,7 +97,7 @@ def run_grasshopper(area, thickness, project_url, speckle_token, selected_model_
     print(f"Sending area: {area}, thickness: {thickness}")
 
     # Send request to Rhino Compute
-    response = requests.post("https://premium-sheriff-refugees-venues.trycloudflare.com", headers=headers, json=request_data)
+    response = requests.post("https://premium-sheriff-refugees-venues.trycloudflare.com/grasshopper", headers=headers, json=request_data)
     print("Response Status Code:", response.status_code)
     print("Response Text:", response.text)
 
