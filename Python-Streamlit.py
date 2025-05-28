@@ -97,7 +97,7 @@ def run_grasshopper(area, thickness, project_url, speckle_token, selected_model_
     print(f"Sending area: {area}, thickness: {thickness}")
 
     # Send request to Rhino Compute
-    response = requests.post("https://loud-disposal-specific-wonderful.trycloudflare.com/grasshopper", headers=headers, json=request_data)
+    response = requests.post(" https://flags-explore-emotional-forget.trycloudflare.com/grasshopper", headers=headers, json=request_data)
     print("Response Status Code:", response.status_code)
     print("Response Text:", response.text)
 
