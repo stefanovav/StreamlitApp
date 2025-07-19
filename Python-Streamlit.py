@@ -64,8 +64,8 @@ def authenticate_with_speckle():
 
     try:
         client.authenticate_with_token(speckle_token)
-        if client.user:
-            st.success(f"✅ Authenticated with Speckle as: {client.user.name}")
+        if client.account and client.account.userInfo:
+            st.success(f"✅ Authenticated with Speckle as: {client.account.userInfo.name}")
             return client, client.account
         else:
             st.error("❌ Authentication failed: no user info returned.")
