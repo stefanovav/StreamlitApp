@@ -1,3 +1,5 @@
+from fastapi import FastAPI, Request, HTTPException, Header
+from dotenv import load_dotenv
 import streamlit as st
 import plotly.graph_objects as go
 import requests
@@ -43,69 +45,110 @@ import time
 
 # Speckle server configuration
 HOST = "https://app.speckle.systems"
-rhino_compute_url = "http://localhost:8081"
+rhino_compute_url = "https://test.structuredd.org/io"
 compute_rhino3d.Util.url = rhino_compute_url
-GH_FILE_PATH = r"https://raw.githubusercontent.com/stefanovav/StreamlitApp/main/GHScript_Karamba3d_2d%20Structures_Shell_22Video.gh"
+GH_FILE_PATH = r"C:\Users\Denitsa\Documents\WebSite\22.Video+SpeckleConf\GHScript_Karamba3d_2d Structures_Shell_22Video.gh"
 
 
+
+
+
+# client = None
+# account = None
+# speckle_token = None
+
+# Authenticate logic with TOKEN:
+# def authenticate_with_speckle():
+#
+#     client = SpeckleClient(host=HOST)
+#     speckle_token = st.secrets["TOKEN"]["value"]
+#     client.authenticate_with_token(speckle_token)
+#     st.success(f"✅ Authenticated with Speckle as: {client.user.name}")
+#     return client, client.account
+
+
+# Authenticate logic with default account:
 def authenticate_with_speckle():
 
     client = SpeckleClient(host=HOST)
-    speckle_token = st.secrets["TOKEN"]["value"]
-    client.authenticate_with_token(speckle_token)
-    st.success(f"✅ Authenticated with Speckle as: {client.user.name}")
-    return client, client.account
+
+    # Get the default Speckle account (fetches stored login)
+    account = get_default_account()
+    if not account:
+        st.error("No Speckle account found! Please log in to your Speckle account.")
+        return None, None
+
+    # Authenticate the client with the fetched account
+    client.authenticate_with_account(account)
+    #speckle_token = account.token  # Dynamically fetch the token
+
+    st.success(f"✅ Authenticated with Speckle as: {account.userInfo.name}")
+    return client, account
+
+
+
 
 
 
 def run_grasshopper(area, thickness, project_url, speckle_token, selected_model_id):
     headers = {"Content-Type": "application/json"}
+    #user_area = 120  # Example area value
+    #user_thickness = 60
+    # Local Grasshopper file (must be open in Rhino)
 
     project_id = extract_project_id(project_url)
+
     if not project_id:
         st.error("⚠️ Invalid Speckle Project URL. Could not extract project ID.")
         return None
 
     full_project_url = f"https://app.speckle.systems/projects/{project_id}/models/{selected_model_id}"
 
-    # When GH file is on GitHub:
-    response = requests.get(GH_FILE_PATH)
-    if response.status_code != 200:
-        st.error(f"❌ Failed to fetch GH file from GitHub. Status code: {response.status_code}")
-        return None
+#When GH file is local:
+    with open(GH_FILE_PATH, "rb") as file:
+        gh_definition = file.read()
+        gh_definition_base64 = base64.b64encode(gh_definition).decode('utf-8')
 
-    gh_definition = response.content
-    gh_definition_base64 = base64.b64encode(gh_definition).decode('utf-8')
+# #When GH file is on GitHub:
+#         response = requests.get(GH_FILE_PATH)
+#         if response.status_code != 200:
+#             st.error(f"❌ Failed to fetch GH file from GitHub. Status code: {response.status_code}")
+#             return None
+#
+#         gh_definition = response.content
+#         gh_definition_base64 = base64.b64encode(gh_definition).decode('utf-8')
 
-    st.write("✅ **Verification of data:**")
-    st.write("⚪ Sending Area:", area)
-    st.write("⚪ Sending Thickness:", thickness)
-    st.write("⚪ Project URL:", project_url)
-    st.write("⚪ Speckle Token:", speckle_token[:10] + "********")
 
-    request_data = {
-        "algo": gh_definition_base64,
-        "pointer": None,
-        "values": [
-            {"ParamName": "area", "InnerTree": {"{0}": [{"data": area}]}},
-            {"ParamName": "thickness", "InnerTree": {"{0}": [{"data": thickness}]}},
-            {"ParamName": "project_url", "InnerTree": {"{0}": [{"data": full_project_url}]}},
-            {"ParamName": "speckle_token", "InnerTree": {"{0}": [{"data": speckle_token}]}}
-        ]
-    }
 
+        st.write("✅ **Verification of data:**")
+        st.write("⚪ Sending Area:", area)
+        st.write("⚪ Sending Thickness:", thickness)
+        st.write("⚪ Project URL:", project_url)
+        st.write("⚪ Speckle Token:", speckle_token[:10] + "********")
+
+        request_data = {
+            "algo": gh_definition_base64,
+            "pointer": None,
+            "values": [
+                {"ParamName": "area", "InnerTree": {"{0}": [{"data": area}]}},
+                {"ParamName": "thickness", "InnerTree": {"{0}": [{"data": thickness}]}},
+                {"ParamName": "project_url", "InnerTree": {"{0}": [{"data": full_project_url}]}},
+                {"ParamName": "speckle_token", "InnerTree": {"{0}": [{"data": speckle_token}]}},
+
+            ]
+        }
     print(f"Sending area: {area}, thickness: {thickness}")
 
-    # Send request to Rhino Compute
-    response = requests.post(" https://flags-explore-emotional-forget.trycloudflare.com/grasshopper", headers=headers, json=request_data)
+    #Send request to Rhino Compute
+
+
+    response = requests.post("https://test.structuredd.org/grasshopper", headers=headers, json=request_data)
     print("Response Status Code:", response.status_code)
     print("Response Text:", response.text)
-
     if response.status_code == 200:
-        return response.json()
+        return response.json()  # ✅ Return the response data
     else:
         return None
-
 
 
 
@@ -163,6 +206,8 @@ def fetch_latest_version(selected_model):
     else:
         st.error("Could not extract version ID from preview URL.")
         return None
+
+
 
 
 
@@ -249,6 +294,13 @@ def main():
 
     # 🟢 Step 4: Initialize session state for version tracking
 
+
+
+    # latest_version= fetch_latest_version(selected_model)
+    # if not latest_version:
+    #     st.error("Could not fetch latest version for the selected model.")
+    #     return
+
     latest_version_id = fetch_latest_version(selected_model)
     if not latest_version_id:
         st.error("Could not fetch latest version for the selected model.")
@@ -305,6 +357,12 @@ def main():
                     if utilization_values:
                         # Extract the first utilization value and round it
                         rounded_utilization = round(utilization_values[0]["Utilization"], 2)
+                        #st.session_state["last_utilization"] = rounded_utilization
+                        #
+                        # st.session_state["model_loaded"] = True
+                        # st.session_state["project_id"] = project_id
+                        # st.session_state["selected_model_id"] = selected_model_id
+                        # st.session_state["speckle_token"] = speckle_token
 
                         # Determine status and color based on utilization value
                         status = "OK" if rounded_utilization <= 1 else "!"
@@ -336,6 +394,13 @@ def main():
                         # Display in Streamlit
                         #st.write(f"✅ Utilization Value: {rounded_utilization}")
                         st.plotly_chart(fig)
+
+                    # 🟢 Step 9: Update Speckle with the New Version
+                    # new_version_id = send_data_to_speckle(client, area, thickness, project_id, selected_model_id,
+                    #                                       speckle_token, res)
+                    # if new_version_id:
+                    #     st.write("✅ New Version ID:", new_version_id)
+                    #     st.write("🔄 Data Sent: Area =", area, "Thickness =", thickness)
 
                         # 🟢 Step 10: Update the Viewer with the Latest Model
                         versionviewer(project_id, selected_model_id, speckle_token)
