@@ -58,32 +58,32 @@ GH_FILE_PATH = r"C:\Users\Denitsa\Documents\WebSite\22.Video+SpeckleConf\GHScrip
 # speckle_token = None
 
 # Authenticate logic with TOKEN:
-# def authenticate_with_speckle():
-#
-#     client = SpeckleClient(host=HOST)
-#     speckle_token = st.secrets["TOKEN"]["value"]
-#     client.authenticate_with_token(speckle_token)
-#     st.success(f"✅ Authenticated with Speckle as: {client.user.name}")
-#     return client, client.account
-
-
-# Authenticate logic with default account:
 def authenticate_with_speckle():
 
     client = SpeckleClient(host=HOST)
+    speckle_token = st.secrets["TOKEN"]["value"]
+    client.authenticate_with_token(speckle_token)
+    st.success(f"✅ Authenticated with Speckle as: {client.user.name}")
+    return client, client.account
 
-    # Get the default Speckle account (fetches stored login)
-    account = get_default_account()
-    if not account:
-        st.error("No Speckle account found! Please log in to your Speckle account.")
-        return None, None
 
-    # Authenticate the client with the fetched account
-    client.authenticate_with_account(account)
-    #speckle_token = account.token  # Dynamically fetch the token
+# Authenticate logic with default account:
+# def authenticate_with_speckle():
 
-    st.success(f"✅ Authenticated with Speckle as: {account.userInfo.name}")
-    return client, account
+#     client = SpeckleClient(host=HOST)
+
+#     # Get the default Speckle account (fetches stored login)
+#     account = get_default_account()
+#     if not account:
+#         st.error("No Speckle account found! Please log in to your Speckle account.")
+#         return None, None
+
+#     # Authenticate the client with the fetched account
+#     client.authenticate_with_account(account)
+#     #speckle_token = account.token  # Dynamically fetch the token
+
+#     st.success(f"✅ Authenticated with Speckle as: {account.userInfo.name}")
+#     return client, account
 
 
 
