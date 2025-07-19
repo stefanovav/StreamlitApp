@@ -201,11 +201,11 @@ def find_utilization_value(members_data):
 
 def fetch_latest_version(selected_model):
     """Extract and return version ID from the model's previewUrl."""
-    st.write("Model object:", selected_model)
-    st.write("previewUrl exists?", hasattr(selected_model, "previewUrl"))
-    st.write("previewUrl value:", getattr(selected_model, "previewUrl", None))
+    # st.write("Model object:", selected_model)
+    # st.write("previewUrl exists?", hasattr(selected_model, "previewUrl"))
+    # st.write("previewUrl value:", getattr(selected_model, "previewUrl", None))
 
-    preview_url = getattr(selected_model, "previewUrl", None)
+    preview_url = getattr(selected_model, "preview_url", None)
 
     if preview_url is None:
         st.error("No previewUrl found in the selected model.")
