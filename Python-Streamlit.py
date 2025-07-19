@@ -355,7 +355,7 @@ def main():
                 # 🟢 Step 8: Extract and Display Utilization Value
                 transport = ServerTransport(client=client, stream_id=project_id, account=account)
 
-                res = operations.receive(version.referencedObjectId, transport)
+                res = operations.receive(version.referencedObject, transport)
 
                 if res:
                     members_data = getattr(res, "@data", None)
