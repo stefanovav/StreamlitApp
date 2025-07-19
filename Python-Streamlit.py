@@ -47,7 +47,7 @@ import time
 HOST = "https://app.speckle.systems"
 rhino_compute_url = "https://test.structuredd.org/io"
 compute_rhino3d.Util.url = rhino_compute_url
-GH_FILE_PATH = r"C:\Users\Denitsa\Documents\WebSite\22.Video+SpeckleConf\GHScript_Karamba3d_2d Structures_Shell_22Video.gh"
+GH_FILE_PATH = r"https://raw.githubusercontent.com/yourusername/repo/main/GHScript_Karamba3d_2d Structures_Shell_22Video.gh"
 
 
 
