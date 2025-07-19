@@ -47,15 +47,10 @@ import time
 HOST = "https://app.speckle.systems"
 rhino_compute_url = "https://test.structuredd.org/io"
 compute_rhino3d.Util.url = rhino_compute_url
-GH_FILE_PATH = r"https://raw.githubusercontent.com/yourusername/repo/main/GHScript_Karamba3d_2d Structures_Shell_22Video.gh"
+GH_FILE_PATH = r"https://raw.githubusercontent.com/stefanovav/main/GHScript_Karamba3d_2d Structures_Shell_22Video.gh"
 
 
 
-
-
-# client = None
-# account = None
-# speckle_token = None
 
 # Authenticate logic with TOKEN:
 def authenticate_with_speckle():
