@@ -105,9 +105,6 @@ def authenticate_with_speckle():
 
 def run_grasshopper(area, thickness, project_url, speckle_token, selected_model_id):
     headers = {"Content-Type": "application/json"}
-    #user_area = 120  # Example area value
-    #user_thickness = 60
-    # Local Grasshopper file (must be open in Rhino)
 
     project_id = extract_project_id(project_url)
 
@@ -117,51 +114,41 @@ def run_grasshopper(area, thickness, project_url, speckle_token, selected_model_
 
     full_project_url = f"https://app.speckle.systems/projects/{project_id}/models/{selected_model_id}"
 
-#When GH file is local:
+    # Get GH definition in base64
     gh_definition_base64 = get_gh_definition(GH_FILE_PATH)
     if gh_definition_base64 is None:
         return None  # stop if loading failed
 
+    # ✅ This block should run only if GH file loaded successfully
+    st.write("✅ **Verification of data:**")
+    st.write("⚪ Sending Area:", area)
+    st.write("⚪ Sending Thickness:", thickness)
+    st.write("⚪ Project URL:", project_url)
+    st.write("⚪ Speckle Token:", speckle_token[:10] + "********")
 
-# #When GH file is on GitHub:
-#         response = requests.get(GH_FILE_PATH)
-#         if response.status_code != 200:
-#             st.error(f"❌ Failed to fetch GH file from GitHub. Status code: {response.status_code}")
-#             return None
-#
-#         gh_definition = response.content
-#         gh_definition_base64 = base64.b64encode(gh_definition).decode('utf-8')
+    request_data = {
+        "algo": gh_definition_base64,
+        "pointer": None,
+        "values": [
+            {"ParamName": "area", "InnerTree": {"{0}": [{"data": area}]}},
+            {"ParamName": "thickness", "InnerTree": {"{0}": [{"data": thickness}]}},
+            {"ParamName": "project_url", "InnerTree": {"{0}": [{"data": full_project_url}]}},
+            {"ParamName": "speckle_token", "InnerTree": {"{0}": [{"data": speckle_token}]}}
+        ]
+    }
 
-
-
-        st.write("✅ **Verification of data:**")
-        st.write("⚪ Sending Area:", area)
-        st.write("⚪ Sending Thickness:", thickness)
-        st.write("⚪ Project URL:", project_url)
-        st.write("⚪ Speckle Token:", speckle_token[:10] + "********")
-
-        request_data = {
-            "algo": gh_definition_base64,
-            "pointer": None,
-            "values": [
-                {"ParamName": "area", "InnerTree": {"{0}": [{"data": area}]}},
-                {"ParamName": "thickness", "InnerTree": {"{0}": [{"data": thickness}]}},
-                {"ParamName": "project_url", "InnerTree": {"{0}": [{"data": full_project_url}]}},
-                {"ParamName": "speckle_token", "InnerTree": {"{0}": [{"data": speckle_token}]}},
-
-            ]
-        }
     print(f"Sending area: {area}, thickness: {thickness}")
 
-    #Send request to Rhino Compute
-
-
+    # ✅ Send request to Rhino Compute
     response = requests.post("https://test.structuredd.org/grasshopper", headers=headers, json=request_data)
+
     print("Response Status Code:", response.status_code)
     print("Response Text:", response.text)
+
     if response.status_code == 200:
-        return response.json()  # ✅ Return the response data
+        return response.json()
     else:
+        st.error(f"❌ Rhino.Compute error: {response.status_code}")
         return None
 
 
