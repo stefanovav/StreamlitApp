@@ -158,9 +158,9 @@ def extract_project_id(url):
     return match.group(1) if match else None
 
 def fetch_models(client, project_id):
-    #client = SpeckleClient(host=HOST)
-    # account = get_account_from_token(speckle_token, HOST)
-    # client.authenticate_with_account(account)
+    client = SpeckleClient(host=HOST)
+    account = get_account_from_token(speckle_token, HOST)
+    client.authenticate_with_account(account)
     if not client:  # Ensure client is valid
         st.error("Client is not authenticated!")
         return []
