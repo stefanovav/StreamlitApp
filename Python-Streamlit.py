@@ -354,6 +354,8 @@ def main():
 
                 # 🟢 Step 8: Extract and Display Utilization Value
                 transport = ServerTransport(client=client, stream_id=project_id, account=account)
+                st.write("Referenced object ID:", version.referencedObject)
+
                 res = operations.receive(version.referencedObject, transport)
 
                 if res:
