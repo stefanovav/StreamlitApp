@@ -59,12 +59,20 @@ GH_FILE_PATH = r"C:\Users\Denitsa\Documents\WebSite\22.Video+SpeckleConf\GHScrip
 
 # Authenticate logic with TOKEN:
 def authenticate_with_speckle():
-
     client = SpeckleClient(host=HOST)
     speckle_token = st.secrets["TOKEN"]["value"]
-    client.authenticate_with_token(speckle_token)
-    st.success(f"✅ Authenticated with Speckle as: {client.user.name}")
-    return client, client.account
+
+    try:
+        client.authenticate_with_token(speckle_token)
+        if client.user:
+            st.success(f"✅ Authenticated with Speckle as: {client.user.name}")
+            return client, client.account
+        else:
+            st.error("❌ Authentication failed: no user info returned.")
+            return None, None
+    except Exception as e:
+        st.error(f"❌ Authentication error: {e}")
+        return None, None
 
 
 # Authenticate logic with default account:
