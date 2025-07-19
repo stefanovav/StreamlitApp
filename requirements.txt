@@ -6,3 +6,4 @@ specklepy
 stringcase
 pydantic>=2.0
 compute-rhino3d
+fastapi
