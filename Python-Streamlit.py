@@ -47,8 +47,18 @@ import time
 HOST = "https://app.speckle.systems"
 rhino_compute_url = "https://test.structuredd.org/io"
 compute_rhino3d.Util.url = rhino_compute_url
-GH_FILE_PATH = r"https://raw.githubusercontent.com/stefanovav/main/GHScript_Karamba3d_2d Structures_Shell_22Video.gh"
+GH_FILE_PATH = r"https://raw.githubusercontent.com/stefanovav/main/GHScript_Karamba3d_2d%20Structures_Shell_22Video.gh"
 
+
+def get_gh_definition(gh_file_url):
+    response = requests.get(gh_file_url)
+    if response.status_code == 200:
+        gh_definition = response.content
+        gh_definition_base64 = base64.b64encode(gh_definition).decode('utf-8')
+        return gh_definition_base64
+    else:
+        st.error(f"Failed to fetch GH file. Status code: {response.status_code}")
+        return None
 
 
 
@@ -108,9 +118,10 @@ def run_grasshopper(area, thickness, project_url, speckle_token, selected_model_
     full_project_url = f"https://app.speckle.systems/projects/{project_id}/models/{selected_model_id}"
 
 #When GH file is local:
-    with open(GH_FILE_PATH, "rb") as file:
-        gh_definition = file.read()
-        gh_definition_base64 = base64.b64encode(gh_definition).decode('utf-8')
+    gh_definition_base64 = get_gh_definition(GH_FILE_PATH)
+    if gh_definition_base64 is None:
+        return None  # stop if loading failed
+
 
 # #When GH file is on GitHub:
 #         response = requests.get(GH_FILE_PATH)
