@@ -2,7 +2,7 @@ streamlit
 plotly
 requests
 flask
-specklepy
+specklepy>=2.15.1
 stringcase
 pydantic>=2.0
 compute-rhino3d
